@@ -41,7 +41,7 @@ HP: ${pokemonInfo.stats.hp}
                 { role: "user", content: prompt }
             ],
             temperature: 0.7,
-            max_tokens: 200
+            max_tokens: 500
         });
 
         return completion.choices[0].message.content.trim();
@@ -250,11 +250,9 @@ app.post('/api/getPokemon', async (req, res) => {
             throw new Error('表情スコアが提供されていません。');
         }
 
-        // ポケモン選択とデータ取得
+        // 全ての非同期処理をtry-catch内で実行
         const { pokemon, description } = selectPokemon(smileScore);
         const pokemonInfo = await getPokemonInfo(pokemon);
-
-        // 占い文言の生成
         const fortune = await createPokemonFortune(
             pokemonInfo,
             smileScore,
@@ -262,21 +260,27 @@ app.post('/api/getPokemon', async (req, res) => {
             userExpression
         );
 
-        res.json({
+        // レスポンスを送信する前にJSONとして有効か確認
+        const response = {
             status: 'complete',
             pokemon: pokemonInfo,
             analysis: {
                 smileScore,
                 emotion: description
             },
-            fortune: fortune
-        });
+            fortune: fortune || '申し訳ありません。占い結果を生成できませんでした。'
+        };
+
+        // JSONとして有効か確認
+        JSON.stringify(response);
+        
+        res.json(response);
 
     } catch (error) {
         console.error('Error in /api/getPokemon:', error);
         res.status(500).json({ 
             status: 'error', 
-            error: error.message 
+            error: error.message || '予期せぬエラーが発生しました。'
         });
     }
 });
