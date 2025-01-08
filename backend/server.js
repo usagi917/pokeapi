@@ -1,15 +1,55 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+const { OpenAI } = require('openai');
 const path = require('path');
 
 const app = express();
+const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
-// CORSの設定を修正
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, '../frontend')));
+
+// OpenAIを使用して占い文言を生成
+async function createPokemonFortune(pokemonInfo, smileScore, emotion, userExpression) {
+    try {
+        const prompt = `
+あなたは占い師として、以下の情報を元に、ポケモンの特徴を活かした占い結果を生成してください。
+結果は150文字程度で、ポケモンの特徴を活かした占い結果を生成してください。口調は関西弁で面白く辛口にしてください。
+
+
+ポケモン: ${pokemonInfo.name}
+ポケモンの説明: ${pokemonInfo.flavorText}
+ユーザーの表情: ${userExpression}
+笑顔スコア: ${smileScore}
+性格カテゴリ: ${emotion}
+
+ポケモンのステータス:
+HP: ${pokemonInfo.stats.hp}
+攻撃: ${pokemonInfo.stats.attack}
+防御: ${pokemonInfo.stats.defense}
+素早さ: ${pokemonInfo.stats.speed}
+`;
+
+        const completion = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { role: "system", content: "あなたは優しい占い師です。ポケモンの特徴を活かした占い結果を生成してください。" },
+                { role: "user", content: prompt }
+            ],
+            temperature: 0.7,
+            max_tokens: 200
+        });
+
+        return completion.choices[0].message.content.trim();
+    } catch (error) {
+        console.error('OpenAI API error:', error);
+        throw new Error('占い文章の生成に失敗しました');
+    }
+}
 
 // 初代151匹のポケモンを10段階の性格に分類
 const POKEMON_PERSONALITY = {
@@ -202,17 +242,25 @@ function selectPokemon(smileScore) {
     };
 }
 
-// エンドポイントを更新
+// エンドポイントを更新（OpenAI統合）
 app.post('/api/getPokemon', async (req, res) => {
     try {
-        const { smileScore } = req.body;
+        const { smileScore, userExpression = "neutral" } = req.body;
         if (smileScore === undefined) {
             throw new Error('表情スコアが提供されていません。');
         }
 
-        // 新しい選択ロジックを使用
+        // ポケモン選択とデータ取得
         const { pokemon, description } = selectPokemon(smileScore);
         const pokemonInfo = await getPokemonInfo(pokemon);
+
+        // 占い文言の生成
+        const fortune = await createPokemonFortune(
+            pokemonInfo,
+            smileScore,
+            description,
+            userExpression
+        );
 
         res.json({
             status: 'complete',
@@ -220,7 +268,8 @@ app.post('/api/getPokemon', async (req, res) => {
             analysis: {
                 smileScore,
                 emotion: description
-            }
+            },
+            fortune: fortune
         });
 
     } catch (error) {

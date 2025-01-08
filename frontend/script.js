@@ -168,6 +168,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <h2>${result.pokemon.name}</h2>
                         <p>${result.analysis.emotion}</p>
                         <p>タイプ: ${result.pokemon.types.join(', ')}</p>
+                        <div class="fortune-message">
+                            <h3>占い結果</h3>
+                            <p>${result.fortune}</p>
+                        </div>
                         <div class="pokemon-stats">
                             <p>身長: ${result.pokemon.height}m</p>
                             <p>体重: ${result.pokemon.weight}kg</p>
