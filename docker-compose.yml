@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  app:
+    platform: linux/amd64
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - TFJS_BACKEND=cpu
+      - HTTPS=true
+      - NODE_OPTIONS="--max-old-space-size=8192"
+      - UV_THREADPOOL_SIZE=32
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 2G
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 5s 

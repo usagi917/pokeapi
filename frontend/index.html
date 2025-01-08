@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ポケモンと笑顔指数アプリ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta http-equiv="Permissions-Policy" content="camera=*">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+</head>
+<body>
+    <h1>ポケモンと笑顔指数アプリ</h1>
+    <div id="app">
+        <input type="file" id="imageUpload" accept="image/*">
+        <label for="imageUpload" class="upload-button">画像をアップロード</label>
+        <button id="cameraButton">カメラを起動</button>
+        <div id="result"></div>
+    </div>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

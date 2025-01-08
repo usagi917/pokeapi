@@ -1,0 +1,38 @@
+# バージョン管理システム
+.git
+.gitignore
+.gitattributes
+
+# Node.js関連
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.npm
+.cache
+
+# 環境設定
+.env
+.env.local
+.env.*.local
+.editorconfig
+.eslintrc
+.prettierrc
+*.log
+
+# Docker関連
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# ドキュメント
+README.md
+LICENSE
+*.md
+
+# エディタ・OS関連
+.DS_Store
+.vscode
+.idea
+*.swp
+*.swo
