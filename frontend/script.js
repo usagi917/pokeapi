@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <p>${result.analysis.emotion}</p>
                         <p>タイプ: ${result.pokemon.types.join(', ')}</p>
                         <div class="fortune-message">
-                            <h3>占い結果</h3>
+                            <h3>一言</h3>
                             <p>${result.fortune}</p>
                         </div>
                         <div class="pokemon-stats">
