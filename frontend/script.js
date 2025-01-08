@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const appDiv = document.getElementById('app');
     let stream = null;
 
+    // APIのベースURLを環境�数から取得
+    const API_BASE_URL = process.env.NODE_ENV === 'production' 
+        ? '/api' 
+        : 'http://localhost:3001/api';
+
     // カメラ起動ボタンのイベントリスナー
     cameraButton.addEventListener('click', async () => {
         try {
@@ -146,8 +151,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 笑顔スコアの計算
             const smileScore = calculateSmileScore(predictions[0]);
 
-            // サーバーにスコアを送信してポケモンを取得
-            const response = await fetch('http://localhost:3001/api/getPokemon', {
+            // 相対パスを使用してAPIにアクセス
+            const response = await fetch(`${API_BASE_URL}/getPokemon`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ smileScore })
