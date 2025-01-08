@@ -5,10 +5,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const appDiv = document.getElementById('app');
     let stream = null;
 
-    // APIのベースURLを環境�数から取得
-    const API_BASE_URL = process.env.NODE_ENV === 'production' 
-        ? '/api' 
-        : 'http://localhost:3001/api';
+    // APIのベースURLを�在のホストに基づいて設定
+    const API_BASE_URL = window.location.hostname === 'localhost' 
+        ? 'http://localhost:3001/api' 
+        : '/api';
 
     // カメラ起動ボタンのイベントリスナー
     cameraButton.addEventListener('click', async () => {
